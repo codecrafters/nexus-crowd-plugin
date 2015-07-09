@@ -12,10 +12,7 @@
  */
 package org.sonatype.nexus.plugins.crowd.client;
 
-import java.net.URISyntaxException;
-
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
+import com.google.inject.Singleton;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -27,33 +24,43 @@ import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
 import org.sonatype.nexus.plugins.crowd.config.CrowdPluginConfiguration;
 import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.net.URISyntaxException;
+
 /**
  * Implementation of the CrowdClientHolder which uses caching wherever possible.
  *
  * @author Justin Edelson
  * @author Issa Gorissen
  */
-@Component(role = CrowdClientHolder.class, hint = "default")
+@Named
+@Singleton
 public class DefaultCrowdClientHolder extends AbstractLogEnabled implements CrowdClientHolder, Initializable {
 
     private boolean configured = false;
-    private AuthBasicCache basicCache;
-    private Configuration configuration;
+
     private CachingAuthenticationManager authManager;
+
     private RestClient restClient;
 
-    @Requirement
-    private CrowdPluginConfiguration crowdPluginConfiguration;
+    private final CrowdPluginConfiguration crowdPluginConfiguration;
 
+    @Inject
+    public DefaultCrowdClientHolder(final CrowdPluginConfiguration crowdPluginConfiguration) {
+        this.crowdPluginConfiguration = crowdPluginConfiguration;
+    }
+
+    @Override
     public void initialize() throws InitializationException {
-        configuration = crowdPluginConfiguration.getConfiguration();
+        final Configuration configuration = crowdPluginConfiguration.getConfiguration();
         if (configuration != null) {
-            basicCache = new AuthBasicCacheImpl(60 * configuration.getSessionValidationInterval());
-			try {
-				restClient = new CachingRestClient(configuration);
-			} catch (URISyntaxException use) {
-				throw new InitializationException("Rest client init failed", use);
-			}
+            final AuthBasicCache basicCache = new AuthBasicCacheImpl(60 * configuration.getSessionValidationInterval());
+            try {
+                restClient = new CachingRestClient(configuration);
+            } catch (URISyntaxException use) {
+                throw new InitializationException("Rest client init failed", use);
+            }
             authManager = new CachingAuthenticationManager(restClient, basicCache);
             configured = true;
         }
@@ -62,15 +69,16 @@ public class DefaultCrowdClientHolder extends AbstractLogEnabled implements Crow
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isConfigured() {
         return configured;
     }
 
     public CachingAuthenticationManager getAuthenticationManager() {
-    	return authManager;
+        return authManager;
     }
-    
+
     public RestClient getRestClient() {
-    	return restClient;
+        return restClient;
     }
 }

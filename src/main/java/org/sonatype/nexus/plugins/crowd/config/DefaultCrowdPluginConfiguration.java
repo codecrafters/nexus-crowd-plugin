@@ -12,36 +12,37 @@
  */
 package org.sonatype.nexus.plugins.crowd.config;
 
+import com.google.inject.Singleton;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonatype.nexus.configuration.application.NexusConfiguration;
+import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
+import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.io.xpp3.NexusCrowdPluginConfigurationXpp3Reader;
+import org.sonatype.sisu.goodies.eventbus.internal.DefaultEventBus;
+import org.sonatype.sisu.goodies.eventbus.internal.guava.EventBus;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.inject.Inject;
+@Named
+@Singleton
+public class DefaultCrowdPluginConfiguration extends DefaultEventBus implements CrowdPluginConfiguration {
 
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.Configuration;
-import org.sonatype.nexus.plugins.crowd.config.model.v1_0_0.io.xpp3.NexusCrowdPluginConfigurationXpp3Reader;
-import org.sonatype.sisu.goodies.eventbus.internal.DefaultEventBus;
-import org.sonatype.sisu.goodies.eventbus.internal.guava.EventBus;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCrowdPluginConfiguration.class);
 
-@Component(role = CrowdPluginConfiguration.class, hint = "default")
-public class DefaultCrowdPluginConfiguration extends DefaultEventBus implements
-        CrowdPluginConfiguration {
+    private final File config;
 
-	@Inject
-	public DefaultCrowdPluginConfiguration(EventBus eventBus) {
-		super(eventBus);
-	}
-
-	private final Logger logger = LoggerFactory.getLogger(DefaultCrowdPluginConfiguration.class);
-	
-    @org.codehaus.plexus.component.annotations.Configuration(value = "${nexus-work}/conf/crowd-plugin.xml")
-    private File configurationFile;
+    @Inject
+    public DefaultCrowdPluginConfiguration(final EventBus eventBus, final NexusConfiguration nexusConfiguration) {
+        super(eventBus);
+        config = new File(nexusConfiguration.getConfigurationDirectory(), "crowd-plugin.xml");
+    }
 
     private Configuration configuration;
 
@@ -57,19 +58,17 @@ public class DefaultCrowdPluginConfiguration extends DefaultEventBus implements
         FileInputStream is = null;
 
         try {
-            is = new FileInputStream(configurationFile);
+            is = new FileInputStream(config);
 
             NexusCrowdPluginConfigurationXpp3Reader reader = new NexusCrowdPluginConfigurationXpp3Reader();
 
             configuration = reader.read(is);
         } catch (FileNotFoundException e) {
-            logger.error(
-                    "Crowd configuration file does not exist: "
-                            + configurationFile.getAbsolutePath());
+            LOGGER.error("Crowd configuration file does not exist: " + config.getAbsolutePath());
         } catch (IOException e) {
-        	logger.error("IOException while retrieving configuration file", e);
+            LOGGER.error("IOException while retrieving configuration file", e);
         } catch (XmlPullParserException e) {
-        	logger.error("Invalid XML Configuration", e);
+            LOGGER.error("Invalid XML Configuration", e);
         } finally {
             if (is != null) {
                 try {

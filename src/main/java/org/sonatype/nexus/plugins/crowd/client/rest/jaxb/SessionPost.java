@@ -17,6 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="authentication-context")
 public class SessionPost {
-	public String username;
-	public String password;
+    public String username;
+    public String password;
 }

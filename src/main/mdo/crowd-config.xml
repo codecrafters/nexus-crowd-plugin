@@ -13,8 +13,8 @@
 
 -->
 <model xml.namespace="${version}"
-	xml.schemaLocation="${version}"
-	xsd.namespace="${version}"
+    xml.schemaLocation="${version}"
+    xsd.namespace="${version}"
     xsd.targetNamespace="${version}">
 
     <id>crowd</id>

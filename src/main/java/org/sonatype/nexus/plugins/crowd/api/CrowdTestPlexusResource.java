@@ -12,10 +12,7 @@
  */
 package org.sonatype.nexus.plugins.crowd.api;
 
-import java.rmi.RemoteException;
-
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
+import com.google.inject.Singleton;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -25,7 +22,10 @@ import org.restlet.resource.Variant;
 import org.sonatype.nexus.plugins.crowd.client.CrowdClientHolder;
 import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-import org.sonatype.plexus.rest.resource.PlexusResource;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.rmi.RemoteException;
 
 /**
  * Intent of this class is to enable an admin to easily test if the Crowd
@@ -34,11 +34,16 @@ import org.sonatype.plexus.rest.resource.PlexusResource;
  * @author Justin Edelson
  * @author Issa Gorissen
  */
-@Component(role = PlexusResource.class, hint = "CrowdTestPlexusResource")
+@Named
+@Singleton
 public class CrowdTestPlexusResource extends AbstractPlexusResource {
 
-    @Requirement
-    private CrowdClientHolder crowdClientHolder;
+    private final CrowdClientHolder crowdClientHolder;
+
+    @Inject
+    public CrowdTestPlexusResource(final CrowdClientHolder crowdClientHolder) {
+        this.crowdClientHolder = crowdClientHolder;
+    }
 
     @Override
     public Object getPayloadInstance() {

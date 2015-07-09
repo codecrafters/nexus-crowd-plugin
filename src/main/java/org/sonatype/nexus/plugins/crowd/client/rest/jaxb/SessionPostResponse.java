@@ -17,16 +17,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="session")
 public class SessionPostResponse {
-	public String token;
-	public UserResponse user;
-	public Link link;
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("SessionPostResponse [token=").append(token)
-				.append(", user=").append(user).append(", link=").append(link)
-				.append("]");
-		return builder.toString();
-	}
+    public String token;
+    public UserResponse user;
+    public Link link;
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SessionPostResponse [token=").append(token)
+                .append(", user=").append(user).append(", link=").append(link)
+                .append("]");
+        return builder.toString();
+    }
 }

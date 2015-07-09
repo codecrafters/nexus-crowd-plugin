@@ -12,40 +12,39 @@
  */
 package org.sonatype.nexus.plugins.crowd.client;
 
-import java.rmi.RemoteException;
-import java.util.Set;
-import java.util.Collections;
-
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
+import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.security.authorization.AbstractReadOnlyAuthorizationManager;
-import org.sonatype.security.authorization.AuthorizationManager;
-import org.sonatype.security.authorization.NoSuchPrivilegeException;
-import org.sonatype.security.authorization.NoSuchRoleException;
-import org.sonatype.security.authorization.Privilege;
-import org.sonatype.security.authorization.Role;
+import org.sonatype.security.authorization.*;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author justin
  * @author Issa Gorissen
  */
-@Component(role = AuthorizationManager.class, hint = "Crowd")
+@Named
+@Singleton
 public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationManager {
 
-    @Requirement
-    private CrowdClientHolder crowdClientHolder;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrowdAuthorizationManager.class);
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final CrowdClientHolder crowdClientHolder;
 
-    public CrowdAuthorizationManager() {
-        logger.info("CrowdAuthorizationManager is starting...");
+    @Inject
+    public CrowdAuthorizationManager(final CrowdClientHolder crowdClientHolder) {
+        this.crowdClientHolder = crowdClientHolder;
+        LOGGER.info("CrowdAuthorizationManager is starting...");
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Privilege getPrivilege(String privilegeId) throws NoSuchPrivilegeException {
         throw new NoSuchPrivilegeException("Crowd plugin doesn't support privileges");
     }
@@ -53,6 +52,7 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
     /**
      * {@inheritDoc}
      */
+    @Override
     public Role getRole(String roleId) throws NoSuchRoleException {
         if (crowdClientHolder.isConfigured()) {
             try {
@@ -78,18 +78,17 @@ public class CrowdAuthorizationManager extends AbstractReadOnlyAuthorizationMana
     public Set<Role> listRoles() {
         if (crowdClientHolder.isConfigured()) {
             try {
-            	Set<Role> roles = crowdClientHolder.getRestClient().getAllGroups();
-            	for (Role role : roles) {
-            		role.setSource(getSource());
-            	}
+                Set<Role> roles = crowdClientHolder.getRestClient().getAllGroups();
+                for (Role role : roles) {
+                    role.setSource(getSource());
+                }
                 return roles;
             } catch (RemoteException e) {
-                logger.error("Unable to load roles", e);
+                LOGGER.error("Unable to load roles", e);
                 return null;
             }
         }
         UnconfiguredNotifier.unconfigured();
         return Collections.emptySet();
     }
-
 }

@@ -37,8 +37,8 @@ public class AuthBasicCacheImpl implements AuthBasicCache {
         this.ehCacheManager = CacheManager.getInstance();
 
         if (!ehCacheManager.cacheExists(USERNAME_PASSWORD_CACHE)) {
-        	Cache newCache = new Cache(USERNAME_PASSWORD_CACHE, 10000, false, false, ttl, ttl);
-        	
+            Cache newCache = new Cache(USERNAME_PASSWORD_CACHE, 10000, false, false, ttl, ttl);
+
             ehCacheManager.addCache(newCache);
         }
 
@@ -57,7 +57,7 @@ public class AuthBasicCacheImpl implements AuthBasicCache {
     }
 
     private String createCacheKey(String username, String password) {
-        return new StringBuilder(username).append('#').append(password).toString();
+        return username + '#' + password;
     }
 
     private Cache getUsernamePasswordCache() {

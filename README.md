@@ -1,22 +1,12 @@
-Nexus Crowd Plugin [![Build Status](https://travis-ci.org/PatrickRoumanoff/nexus-crowd-plugin.png)](https://travis-ci.org/PatrickRoumanoff/nexus-crowd-plugin)
+Nexus Crowd Plugin
 ==================
 
+This plugin works with Nexus 2.11.3-01 and Crowd 2.5.3
 
-This plugin works with Nexus 2.x and Crowd 2.x
+Later Crowd versions might work, I will soon update my Crowd installation and we will see.
 
-This is a fork of the original work done by sonatype, but as far as I can tell
-they stopped supporting it after Nexus 1.8, the code got moved quite a bit from
-svn to github, lost on the way and only the source for Nexus 1.3 is now
-available from gitHub.
+This is a fork of https://github.com/PatrickRoumanoff/nexus-crowd-plugin.
 
-With a bit of research, I was able to pull the latest available code base for
-Nexus 1.8 which was taged 1.6.2-SNAPSHOT from the sonatype forge repository
-thanks to the source artifact, but this later version is missing a test suite.
+The crowd integration is using the Crowd REST API.
 
-The crowd integration is now using the Crowd REST API.
-
-The aim of this project is to offer an integration between Nexus and Crowd that
-can be installed on Nexus 2.x and offers the same level of functionality than
-its Nexus 1.8 counter part.
-
-Please read on at http://patrickroumanoff.github.io/nexus-crowd-plugin/
+## The plugin is not deployed anywhere. You need to build it yourself with `mvn install` and unzip the bundle into your `$SONATYPE-WORK/plugin-repository`folder.

@@ -33,7 +33,7 @@ public class CachingAuthenticationManager {
     private RestClient restClient;
 
     public CachingAuthenticationManager(RestClient restClient, AuthBasicCache basicCache) {
-    	this.restClient = restClient;
+        this.restClient = restClient;
         this.basicCache = basicCache;
     }
   

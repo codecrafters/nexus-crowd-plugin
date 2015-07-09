@@ -23,7 +23,7 @@ import org.sonatype.nexus.plugins.crowd.client.rest.RestClient;
  * @author Issa Gorissen
  */
 public interface CrowdClientHolder {
-    public boolean isConfigured();
-    public CachingAuthenticationManager getAuthenticationManager();
-    public RestClient getRestClient();
+    boolean isConfigured();
+    CachingAuthenticationManager getAuthenticationManager();
+    RestClient getRestClient();
 }
