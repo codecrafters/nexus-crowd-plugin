@@ -1,7 +1,7 @@
 Nexus Crowd Plugin
 ==================
 
-This plugin works with Nexus 2.11.3-01 and Crowd 2.5.3
+This plugin works with Nexus 2.11.3-01 and Crowd 2.5.3/2.8.3
 
 Later Crowd versions might work, I will soon update my Crowd installation and we will see.
 
